@@ -20,8 +20,8 @@ Before running the code, you need to build the project and install the dependenc
 
 ```bash
 mvn clean install
+```
 
-
-afert all the steps, you will need to generate the grapph: 
+afert all the steps, you will need to generate the graphs: 
 src/test/java/GraphGeneration
-after this you can test all the methods.-
+after this you can test all the methods.
