@@ -17,88 +17,180 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class GraphSimilarityBenchmarkTest {
 
-    static final DirectedMultigraph<String, DefaultEdge> reference;
-    static final PageRank<String, DefaultEdge> pr1;
+	static final DirectedMultigraph<String, DefaultEdge> reference;
+	static final PageRank<String, DefaultEdge> pr1;
 
-    static {
-        try {
-            reference = parseGraph("output/small_graphs/web-baidu-baike_small_00000.txt");
-            pr1 = new PageRank<>(reference, 0.85);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+	static {
+		try {
+			reference = parseGraph("output/small_graphs/web-baidu-baike_small_00000.txt");
+			pr1 = new PageRank<>(reference, 0.85);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-    static final File[] files = getFilesToCompare();
+	static final File[] files = getFilesToCompare();
 
-    static File[] getFilesToCompare() {
-        File dir = new File("output/small_graphs");
-        File[] all = dir.listFiles((d, name) -> name.endsWith(".txt"));
-        // Trie et enlève le fichier 0
-        Arrays.sort(all, Comparator.comparing(File::getName));
-        List<File> filtered = new ArrayList<>();
-        for (File f : all) {
-            if (!f.getName().equals("web-baidu-baike_small_00000.txt")) {
-                filtered.add(f);
-            }
-        }
-        return filtered.toArray(new File[0]);
-    }
-    interface SimilarityFunction {
-        double compute(DirectedMultigraph<String, DefaultEdge> g1, DirectedMultigraph<String, DefaultEdge> g2);
-    }
+	static File[] getFilesToCompare() {
+		File dir = new File("output/small_graphs");
+		File[] all = dir.listFiles((d, name) -> name.endsWith(".txt"));
+		// Trie et enlève le fichier 0
+		Arrays.sort(all, Comparator.comparing(File::getName));
+		List<File> filtered = new ArrayList<>();
+		for (File f : all) {
+			if (!f.getName().equals("web-baidu-baike_small_00000.txt")) {
+				filtered.add(f);
+			}
+		}
+		return filtered.toArray(new File[0]);
+	}
 
-    void benchmarkMethod(String name, SimilarityFunction func) throws IOException {
-        assertNotNull(files, "Le dossier des petits graphes est vide !");
-        int count = 0;
-        long start = System.nanoTime();
-        long limit = start + TimeUnit.MINUTES.toNanos(1);
+	interface SimilarityFunction {
+		double compute(DirectedMultigraph<String, DefaultEdge> g1, DirectedMultigraph<String, DefaultEdge> g2);
+	}
 
-        for (File f : files) {
-            if (System.nanoTime() > limit) break;
-            DirectedMultigraph<String, DefaultEdge> g = parseGraph(f.toString());
-            func.compute(reference, g); // appel de la méthode de similarité
-            count++;
-        }
-        double elapsed = (System.nanoTime() - start) / 1e9;
-        System.out.printf("[%s] %d graphes comparés en %.2f s%n", name, count, elapsed);
-        assertTrue(count > 0, "Aucune comparaison effectuée !");
-    }
+	void benchmarkMethod(String name, SimilarityFunction func) throws IOException {
+		assertNotNull(files, "Le dossier des petits graphes est vide !");
+		int count = 0;
+		long start = System.nanoTime();
+		long limit = start + TimeUnit.MINUTES.toNanos(1);
 
-    @Test
-    public void testVeoSimilarity() throws IOException {
-        benchmarkMethod("veoSimilarity", (g1, g2) -> veoSimilarity(g1, g2));
-    }
+		for (File f : files) {
+			if (System.nanoTime() > limit) break;
+			DirectedMultigraph<String, DefaultEdge> g = parseGraph(f.toString());
+			func.compute(reference, g); // appel de la méthode de similarité
+			count++;
+		}
+		double elapsed = (System.nanoTime() - start) / 1e9;
+		System.out.printf("[%s] %d graphes comparés en %.2f s%n", name, count, elapsed);
+		assertTrue(count > 0, "Aucune comparaison effectuée !");
+	}
 
-    @Test
-    public void testVertexRankingSimilarity2() throws IOException {
-        benchmarkMethod("VertexRankingSimilarity2", (g1, g2) ->
-                new VertexRankingSimilarity2<String, DefaultEdge>().vertexRankingSimilarity(g1, g2, pr1)
-        );
-    }
+	@Test
+	public void testVeoSimilarity() throws IOException {
+		benchmarkMethod("veoSimilarity", (g1, g2) -> veoSimilarity(g1, g2));
+	}
 
-    @Test
-    public void testVertexEdgeVectorSimilarity() throws IOException {
-        benchmarkMethod("vertexEdgeVectorSimilarity", (g1, g2) -> vertexEdgeVectorSimilarity(g1, g2, pr1));
-    }
+	@Test
+	public void testVertexRankingSimilarity2() throws IOException {
+		benchmarkMethod("VertexRankingSimilarity2", (g1, g2) ->
+		  new VertexRankingSimilarity2<String, DefaultEdge>().vertexRankingSimilarity(g1, g2, pr1)
+		);
+	}
 
-    @Test
-    public void testJaccardShingleSimilarity() throws IOException {
-        benchmarkMethod("JaccardShingle", (g1, g2) -> {
-            List<String> seqG1 = serializeGraph(g1, pr1);
-            List<String> seqG2 = serializeGraph(g2, null);
-            Set<String> shG1 = shingles(seqG1, 3);
-            Set<String> shG2 = shingles(seqG2, 3);
-            return jaccardSimilarity(shG1, shG2);
-        });
-    }
+	@Test
+	public void testVertexEdgeVectorSimilarity() throws IOException {
+		benchmarkMethod("vertexEdgeVectorSimilarity", (g1, g2) -> vertexEdgeVectorSimilarity(g1, g2, pr1));
+	}
 
-    @Test
-    public void testSignatureSimilarity5() throws IOException {
-        benchmarkMethod("SignatureSimilarity5", (g1, g2) -> {
-            BitSet sig1 = SignatureSimilarity5.computeSignature(g1, pr1);
-            BitSet sig2 = SignatureSimilarity5.computeSignature(g2, null);
-            return SignatureSimilarity5.computeSimilarity(sig1, sig2);
-        });
-    }
+	@Test
+	public void testJaccardShingleSimilarity() throws IOException {
+		benchmarkMethod("JaccardShingle", (g1, g2) -> {
+			List<String> seqG1 = serializeGraph(g1, pr1);
+			List<String> seqG2 = serializeGraph(g2, null);
+			Set<String> shG1 = shingles(seqG1, 3);
+			Set<String> shG2 = shingles(seqG2, 3);
+			return jaccardSimilarity(shG1, shG2);
+		});
+	}
+
+	@Test
+	public void testSignatureSimilarity5() throws IOException {
+		benchmarkMethod("SignatureSimilarity5", (g1, g2) -> {
+			BitSet sig1 = SignatureSimilarity5.computeSignature(g1, pr1);
+			BitSet sig2 = SignatureSimilarity5.computeSignature(g2, null);
+			return SignatureSimilarity5.computeSimilarity(sig1, sig2);
+		});
+	}
+
+	static File[] getFilesToCompare(String rootDir, double density) {
+		String dirPath = String.format("%s/%.1f", rootDir, density);
+		File dir = new File(dirPath);
+		File[] all = dir.listFiles((d, name) -> name.endsWith(".txt"));
+		if (all == null) return new File[0];
+		Arrays.sort(all, Comparator.comparing(File::getName));
+		// tu peux aussi filtrer le fichier de référence si besoin, comme avant
+		List<File> filtered = new ArrayList<>();
+		for (File f : all) {
+			if (!f.getName().equals("web-baidu-baike_small_00000.txt")) {
+				filtered.add(f);
+			}
+		}
+		return filtered.toArray(new File[0]);
+	}
+
+	void benchmarkMethodOnDensities(
+	  String rootDir,
+	  double[] densities,
+	  SimilarityFunction func
+	) throws IOException {
+		for (double density : densities) {
+			File[] files = getFilesToCompare(rootDir, density);
+			assertNotNull(files, "Le dossier pour densité " + density + " est vide !");
+			// Optionnel : charge la référence pour cette densité
+			// Par exemple, prend le 1er fichier comme référence, ou adapte selon ton usage
+			DirectedMultigraph<String, DefaultEdge> reference = parseGraph(String.format("%s/%.1f/web-baidu-baike_small_00000.txt", rootDir, density));
+			PageRank<String, DefaultEdge> pr1 = new PageRank<>(reference, 0.85);
+
+			int count = 0;
+			long start = System.nanoTime();
+			long limit = start + TimeUnit.MINUTES.toNanos(1);
+
+			for (File f : files) {
+				if (System.nanoTime() > limit) break;
+				DirectedMultigraph<String, DefaultEdge> g = parseGraph(f.toString());
+				func.compute(reference, g);
+				count++;
+			}
+			double elapsed = (System.nanoTime() - start) / 1e9;
+			System.out.printf("[Densité %.2f] %d graphes comparés en %.2f s%n", density, count, elapsed);
+			assertTrue(count > 0, "Aucune comparaison effectuée pour densité " + density + " !");
+		}
+	}
+
+	@Test
+	public void testVeoSimilarityOnDensities() throws IOException {
+		double[] densities = {0.1, 0.2, 0.5};
+		String rootDir = "output/densityStaticGraphs";
+		benchmarkMethodOnDensities(rootDir, densities, (g1, g2) -> veoSimilarity(g1, g2));
+	}
+
+	@Test
+	public void testVertexRankingSimilarity2OnDensities() throws IOException {
+		double[] densities = {0.1, 0.2, 0.5};
+		String rootDir = "output/densityStaticGraphs";
+		benchmarkMethodOnDensities(rootDir, densities, (g1, g2) -> new VertexRankingSimilarity2<String, DefaultEdge>().vertexRankingSimilarity(g1, g2, pr1));
+	}
+
+	@Test
+	public void testVertexEdgeVectorSimilarityOnDensities() throws IOException {
+		double[] densities = {0.1, 0.2, 0.5};
+		String rootDir = "output/densityStaticGraphs";
+		benchmarkMethodOnDensities(rootDir, densities, (g1, g2) -> vertexEdgeVectorSimilarity(g1, g2, pr1));
+	}
+
+	@Test
+	public void testJaccardShingleSimilarityOnDensities() throws IOException {
+		double[] densities = {0.1, 0.2, 0.5};
+		String rootDir = "output/densityStaticGraphs";
+		benchmarkMethodOnDensities(rootDir, densities, (g1, g2) -> {
+			List<String> seqG1 = serializeGraph(g1, pr1);
+			List<String> seqG2 = serializeGraph(g2, null);
+			Set<String> shG1 = shingles(seqG1, 3);
+			Set<String> shG2 = shingles(seqG2, 3);
+			return jaccardSimilarity(shG1, shG2);
+		});
+	}
+
+	@Test
+	public void testSignatureSimilarity5OnDensities() throws IOException {
+		double[] densities = {0.1, 0.2, 0.5};
+		String rootDir = "output/densityStaticGraphs";
+		benchmarkMethodOnDensities(rootDir, densities, (g1, g2) -> {
+			BitSet sig1 = SignatureSimilarity5.computeSignature(g1, pr1);
+			BitSet sig2 = SignatureSimilarity5.computeSignature(g2, null);
+			return SignatureSimilarity5.computeSimilarity(sig1, sig2);
+		});
+	}
+
 }
