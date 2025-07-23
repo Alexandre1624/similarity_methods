@@ -8,14 +8,11 @@ import java.util.stream.Stream;
 
 public class VertexRankingSimilarity2<V, E> {
 
-        public double vertexRankingSimilarity(DirectedMultigraph<V, E> g1, DirectedMultigraph<V, E> g2, PageRank<V, E> pr1) {
+        public double vertexRankingSimilarity(DirectedMultigraph<V, E> g1, DirectedMultigraph<V, E> g2, PageRank<V, E> pr1, PageRank<V, E> pr2) {
             //Union des sommets
             Set<V> union = new HashSet<>();
             union.addAll(g1.vertexSet());
             union.addAll(g2.vertexSet());
-
-            //PageRank comme scores de qualité
-            PageRank<V, E> pr2 = new PageRank<>(g2, 0.85);
 
             Map<V, Double> qualityG1 = new HashMap<>();
             Map<V, Double> qualityG2 = new HashMap<>();

@@ -16,25 +16,25 @@ public class Main {
         DirectedMultigraph<String, DefaultEdge> G =
                 new DirectedMultigraph<>(DefaultEdge.class);
 
-        // Lecture du fichier
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             String line;
             while ((line = br.readLine()) != null) {
                 line = line.trim();
+                if (line.isEmpty()) continue; // Ignore les lignes vides
                 String[] parts = line.split("\\s+");
-                if (parts.length != 2) {
+                if (parts.length == 1) {
+                    String su = parts[0].trim();
+                    if (!G.containsVertex(su)) G.addVertex(su);
+                } else if (parts.length == 2) {
+                    String su = parts[0].trim();
+                    String sv = parts[1].trim();
+                    if (!G.containsVertex(su)) G.addVertex(su);
+                    if (!G.containsVertex(sv)) G.addVertex(sv);
+                    if (!su.equals(sv)) {
+                        G.addEdge(su, sv);
+                    }
+                } else {
                     System.err.println("Ligne non valide : " + line);
-                    continue;
-                }
-                String su= parts[0];
-                String sv = parts[1];
-
-
-                // ajouter les sommets s’ils n’existent pas encore
-                if (!G.containsVertex(su)) G.addVertex(su);
-                if (!G.containsVertex(sv)) G.addVertex(sv);
-                if (!su.equals(sv)) {
-                    G.addEdge(su, sv);
                 }
             }
         }

@@ -13,45 +13,54 @@ import org.jgrapht.graph.DefaultEdge;
 public class SequenceSimilarityJaccard4 {
 
     // Sérialisation du graphe selon la qualité (ici degré du sommet)
-    public static List<String> serializeGraph(DirectedMultigraph<String, DefaultEdge> graph,  PageRank<String, DefaultEdge> pageRank) {
+    public static List<String> serializeGraph(DirectedMultigraph<String, DefaultEdge> graph, PageRank<String, DefaultEdge> pageRank) {
         List<String> sequence = new ArrayList<>();
         Set<String> visited = new HashSet<>();
 
         // Calcul des scores PageRank si nécessaire
-        if ( pageRank == null) {
+        if (pageRank == null) {
             pageRank = new PageRank<>(graph);
         }
         Map<String, Double> scores = pageRank.getScores();
 
-        // Liste triée décroissante des sommets selon score
+        // Utilise LinkedHashSet pour garder l'ordre de tri et supprimer efficacement
         List<String> sortedVertices = new ArrayList<>(graph.vertexSet());
         sortedVertices.sort(Comparator.comparingDouble(scores::get).reversed());
+        Set<String> vertexSet = new LinkedHashSet<>(sortedVertices);
 
-        String currentNode = sortedVertices.getFirst();
-        sortedVertices.remove(currentNode);
+        String currentNode = null;
 
         while (sequence.size() < graph.vertexSet().size()) {
-            // Cherche un sommet non visité si le node attribué est null
+            // Si on n'a pas de node courant, prends le premier non visité du set
             if (currentNode == null) {
-                currentNode = sortedVertices.getFirst();
+                for (String v : vertexSet) {
+                    if (!visited.contains(v)) {
+                        currentNode = v;
+                        break;
+                    }
+                }
+                if (currentNode == null) break; // plus de sommets à visiter
             }
 
-            String vertex = currentNode;
-            sortedVertices.remove(currentNode);
-            if (!visited.add(vertex)) continue;
-
-            sequence.add(vertex);
+            if (!visited.add(currentNode)) {
+                currentNode = null;
+                continue;
+            }
+            sequence.add(currentNode);
+            vertexSet.remove(currentNode);
 
             // Collecte voisins sortants non visités
             List<String> neighbors = new ArrayList<>();
-            for (DefaultEdge e : graph.outgoingEdgesOf(vertex)) {
+            for (DefaultEdge e : graph.outgoingEdgesOf(currentNode)) {
                 String tgt = graph.getEdgeTarget(e);
                 if (!visited.contains(tgt)) {
                     neighbors.add(tgt);
                 }
             }
-            // prends le voisin avec le plus gros score
-            currentNode = neighbors.stream().max(Comparator.comparingDouble(scores::get)).orElse(null);
+            // Prends le voisin avec le plus gros score
+            currentNode = neighbors.stream()
+                    .max(Comparator.comparingDouble(scores::get))
+                    .orElse(null);
         }
         return sequence;
     }
@@ -86,8 +95,8 @@ public class SequenceSimilarityJaccard4 {
     }
 
      public static void main(String[] args) {
-        DirectedMultigraph<String, DefaultEdge> graphC = new DirectedMultigraph<>(DefaultEdge.class);
-
+//        DirectedMultigraph<String, DefaultEdge> graphC = new DirectedMultigraph<>(DefaultEdge.class);
+//
 //        // Ajouter les sommets
 //        String[] vertices = {"A", "B", "C", "D", "E", "F", "G", "H"};
 //        for (String v : vertices) {
@@ -140,8 +149,8 @@ public class SequenceSimilarityJaccard4 {
 //        gp.addEdge("G", "H"); // Nouvelle arête
 //        gp.addEdge("H", "F");
 //
-//        List<String> seqG = serializeGraph(graphC);
-//        List<String> seqGp = serializeGraph(gp);
+//        List<String> seqG = serializeGraph(graphC, null);
+//        List<String> seqGp = serializeGraph(gp, null);
 //
 //        System.out.println("Séquence G: " + seqG);
 //        System.out.println("Séquence G': " + seqGp);

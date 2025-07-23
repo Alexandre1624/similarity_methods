@@ -44,7 +44,7 @@ public class GraphGeneration {
         long maxHeap = Runtime.getRuntime().maxMemory();
         System.out.println("Heap max en Mo: " + (maxHeap / (1024 * 1024)) + " MB");
         double[] fractions = {0.05, 0.10, 0.20};
-        String dir = "output/vertexChangeGraphs";
+        String dir = "output/vertexChangePercentageGraphs";
         FileUtils.ensureDirectoryExists(dir);
         for (double frac : fractions) {
             DirectedMultigraph<String, DefaultEdge> modif = GraphUtils.applyRandomVertexRemoval(base, frac);
@@ -58,21 +58,19 @@ public class GraphGeneration {
      * 3. Croissance des temps d’exécution par découpage du graphe (variation taille/densité)
      */
     @Test
-    public void generateSubgraphBySizeAndDensity() throws IOException {
+    public void generateSubgraphByVertexSize() throws IOException {
         long maxHeap = Runtime.getRuntime().maxMemory();
         System.out.println("Heap max en Mo: " + (maxHeap / (1024 * 1024)) + " MB");
         int[] sizes = {10000, 100000, 1000000};
-        String dir = "output/varietyChangeGraphs";
+        String dir = "output/vertexChangeGraphs";
         FileUtils.ensureDirectoryExists(dir);
-        double[] densities = {0.1, 0.2, 0.5}; // à adapter selon taille
         int count = 0;
         for (int size : sizes) {
-            for (double dens : densities) {
-                DirectedMultigraph<String, DefaultEdge> subgraph = GraphUtils.randomSubgraph(base, size, dens);
-                String filename = String.format("%s/web-baidu-baike_sub_%dk_%.3f.txt", dir, size/1000, dens);
+                DirectedMultigraph<String, DefaultEdge> subgraph = GraphUtils.randomSubgraph(base, size, 1);
+
+                String filename = String.format("%s/web-baidu-baike_sub_%dk_.txt", dir, size/1000);
                 GraphUtils.saveGraph(subgraph, filename);
                 System.out.printf("Sous-graphe #%d : Sommets = %d | Arêtes = %d%n", ++count, subgraph.vertexSet().size(), subgraph.edgeSet().size());
-            }
         }
     }
 
@@ -95,62 +93,49 @@ public class GraphGeneration {
         }
     }
 
-    /**
-     * 4. Genere des graphs en fonctions des points d articulations
-     */
-    @Test
-    public void generateAndSaveSubgraphFromArticulationPoints() throws IOException {
-        long maxHeap = Runtime.getRuntime().maxMemory();
-        System.out.println("Heap max en Mo: " + (maxHeap / (1024 * 1024)) + " MB");
-
-
-        AsUndirectedGraph<String, DefaultEdge> und =
-                new AsUndirectedGraph<>(base);
-        ConnectivityInspector<String, DefaultEdge> insp =
-                new ConnectivityInspector<>(und);
-
-        List<Set<String>> comps = insp.connectedSets();
-        int i = 1;
-        String dir = "output/subsGraphs";
-        Files.createDirectories(Paths.get(dir));
-        for (Set<String> comp : comps) {
-            if (comp.size() < 5) continue;
-            List<String> list = new ArrayList<>(comp);
-            Set<String> subV = new HashSet<>(list.subList(0, list.size()));
-
-            AsSubgraph<String, DefaultEdge> sub =
-                    new AsSubgraph<>(base, subV);
-            String filename = String.format("%s/web-baidu-baike_subgraph_%05d.txt", dir, i);
-            saveGraph(sub, filename);
-            i++;
-        }
-    }
-
-    // Sauvegarde simple : chaque arête = ligne "u v"
-    private void saveGraph(AsSubgraph<String, DefaultEdge> g, String filename) throws IOException {
-        try (PrintWriter pw = new PrintWriter(new FileWriter(filename))) {
-            for (DefaultEdge edge : g.edgeSet()) {
-                String source = g.getEdgeSource(edge);
-                String target = g.getEdgeTarget(edge);
-                pw.println(source + " " + target);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    /**
+//     * 4. Genere des graphs en fonctions des points d articulations
+//     */
+//    @Test
+//    public void generateAndSaveSubgraphFromArticulationPoints() throws IOException {
+//        long maxHeap = Runtime.getRuntime().maxMemory();
+//        System.out.println("Heap max en Mo: " + (maxHeap / (1024 * 1024)) + " MB");
+//
+//
+//        AsUndirectedGraph<String, DefaultEdge> und =
+//                new AsUndirectedGraph<>(base);
+//        ConnectivityInspector<String, DefaultEdge> insp =
+//                new ConnectivityInspector<>(und);
+//
+//        List<Set<String>> comps = insp.connectedSets();
+//        int i = 1;
+//        String dir = "output/subsGraphs";
+//        Files.createDirectories(Paths.get(dir));
+//        for (Set<String> comp : comps) {
+//            if (comp.size() < 5) continue;
+//            List<String> list = new ArrayList<>(comp);
+//            Set<String> subV = new HashSet<>(list.subList(0, list.size()));
+//
+//            AsSubgraph<String, DefaultEdge> sub =
+//                    new AsSubgraph<>(base, subV);
+//            String filename = String.format("%s/web-baidu-baike_subgraph_%05d.txt", dir, i);
+//            saveGraph(sub, filename);
+//            i++;
+//        }
+//    }
 
 
     @Test
-    public void generate35000SmallGraphs() throws IOException {
+    public void generate1000SmallGraphs() throws IOException {
         long maxHeap = Runtime.getRuntime().maxMemory();
         System.out.println("Heap max en Mo: " + (maxHeap / (1024 * 1024)) + " MB");
         int count = 0;
-        int n = 50;
+        int n = 100;
         String dir = "output/small_graphs";
         FileUtils.ensureDirectoryExists(dir);
         Set<String> seen = new HashSet<>();
 
-        while (count < 35000) {
+        while (count < 1000) {
             DirectedMultigraph<String, DefaultEdge> sg = GraphUtils.connectedRandomSubgraph(base, n, 1);
 
             // Crée un identifiant unique pour ce sous-graphe (par exemple, trié par source/target)

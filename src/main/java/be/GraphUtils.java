@@ -37,10 +37,17 @@ public class GraphUtils {
 
     public static void saveGraph(DirectedMultigraph<String, DefaultEdge> graph, String filename) {
         try (PrintWriter pw = new PrintWriter(new FileWriter(filename))) {
+            // Sauve toutes les arêtes
             for (DefaultEdge edge : graph.edgeSet()) {
                 String source = graph.getEdgeSource(edge);
                 String target = graph.getEdgeTarget(edge);
                 pw.println(source + " " + target);
+            }
+            // Sauve les sommets isolés (aucune arête entrante ni sortante)
+            for (String v : graph.vertexSet()) {
+                if (graph.inDegreeOf(v) == 0 && graph.outDegreeOf(v) == 0) {
+                    pw.println(v);
+                }
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -104,8 +111,12 @@ public class GraphUtils {
     public static DirectedMultigraph<String, DefaultEdge> randomSubgraph(
             DirectedMultigraph<String, DefaultEdge> base, int n, double edgeFraction) {
 
-        // Sélectionne n sommets au hasard
         List<String> allVertices = new ArrayList<>(base.vertexSet());
+        if (n > allVertices.size()) {
+            throw new IllegalArgumentException("n (" + n + ") > nombre de sommets (" + allVertices.size() + ")");
+        }
+
+        // Mélange et sélection des sommets
         Collections.shuffle(allVertices);
         Set<String> selectedVertices = new HashSet<>(allVertices.subList(0, n));
 
@@ -115,7 +126,7 @@ public class GraphUtils {
             subgraph.addVertex(v);
         }
 
-        // Ajoute les arêtes entre ces sommets
+        // Construction de la liste des arêtes candidates
         List<DefaultEdge> candidateEdges = new ArrayList<>();
         for (String v : selectedVertices) {
             for (DefaultEdge e : base.outgoingEdgesOf(v)) {
@@ -126,10 +137,12 @@ public class GraphUtils {
             }
         }
 
-        // Garde une fraction aléatoire des arêtes
+        // Sélection aléatoire d'une fraction des arêtes
         Collections.shuffle(candidateEdges);
         int maxEdges = (int) (edgeFraction * candidateEdges.size());
+        if (maxEdges > candidateEdges.size()) maxEdges = candidateEdges.size(); // sécurité
         List<DefaultEdge> selectedEdges = candidateEdges.subList(0, maxEdges);
+
         for (DefaultEdge e : selectedEdges) {
             String source = base.getEdgeSource(e);
             String target = base.getEdgeTarget(e);

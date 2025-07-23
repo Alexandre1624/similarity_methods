@@ -12,10 +12,9 @@ import java.util.Set;
 public class vertexEdgeVectorSimilarityVS3 {
     public static double vertexEdgeVectorSimilarity(
             DirectedMultigraph<String, DefaultEdge> G,
-            DirectedMultigraph<String, DefaultEdge> Gp, PageRank<String, DefaultEdge> prG) {
+            DirectedMultigraph<String, DefaultEdge> Gp, PageRank<String, DefaultEdge> prG, PageRank<String, DefaultEdge> prGp) {
 
         // Scores de qualité (PageRank)
-        PageRank<String, DefaultEdge> prGp = new PageRank<>(Gp);
         Map<String,Double> qG  = prG.getScores();
         Map<String,Double> qGp = prGp.getScores();
 
