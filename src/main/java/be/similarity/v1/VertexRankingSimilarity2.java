@@ -1,9 +1,11 @@
 package be.similarity.v1;
 
 import org.jgrapht.alg.scoring.PageRank;
+import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedMultigraph;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class VertexRankingSimilarity2<V, E> {
@@ -57,7 +59,9 @@ public class VertexRankingSimilarity2<V, E> {
 
             //Calcul de D (normalisation)  int M = Stream.concat(g1.vertexSet().stream(), g2.vertexSet().stream())
             //                    .collect(Collectors.toSet()).size();
-            int M = (int) Stream.concat(g1.vertexSet().stream(), g2.vertexSet().stream()).count();
+            int M = Stream.concat(g1.vertexSet().stream(), g2.vertexSet().stream())
+                    .collect(Collectors.toSet())
+                    .size();
             double D = 0.0;
             for (V v : union) {
                 D += w.get(v) * Math.pow(M - 1, 2);

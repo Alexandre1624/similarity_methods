@@ -1,3 +1,5 @@
+package webbaiduBaike;
+
 import be.similarity.v1.SignatureSimilarity5;
 import be.similarity.v1.VertexRankingSimilarity2;
 import org.jgrapht.alg.scoring.PageRank;
@@ -43,7 +45,14 @@ public class GraphSimilarityIncreasingSizeBenchmarck {
         return filtered.toArray(new File[0]);
     }
 
-
+    static DirectedMultigraph<String, DefaultEdge> removeAllEdges(DirectedMultigraph<String, DefaultEdge> g) {
+        DirectedMultigraph<String, DefaultEdge> empty = new DirectedMultigraph<>(DefaultEdge.class);
+        // Ajoute tous les sommets, pas les arêtes
+        for (String v : g.vertexSet()) {
+            empty.addVertex(v);
+        }
+        return empty;
+    }
     void benchmarkMethodOnIncreasingSize(
             String rootDir,
             GraphSimilarityBenchmarkSmallGraphTest.SimilarityFunction func
@@ -51,6 +60,8 @@ public class GraphSimilarityIncreasingSizeBenchmarck {
         File[] files = getFilesToCompare(rootDir);
         for (File f : files) {
             DirectedMultigraph<String, DefaultEdge> g = parseGraph(f.toString());
+//            DirectedMultigraph<String, DefaultEdge> gNoEdges = removeAllEdges(g);
+
             var pr2 = new PageRank<>(g, 0.85);
             long start = System.nanoTime();
             func.compute(reference, g, pr2);

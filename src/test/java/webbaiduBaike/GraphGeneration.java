@@ -1,19 +1,14 @@
+package webbaiduBaike;
+
 import be.FileUtils;
 import be.GraphUtils;
 
-import org.jgrapht.alg.connectivity.ConnectivityInspector;
-import org.jgrapht.graph.AsSubgraph;
-import org.jgrapht.graph.AsUndirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedMultigraph;
 import org.junit.Test;
 
 
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 
 import static be.Main.parseGraph;
@@ -43,11 +38,26 @@ public class GraphGeneration {
     public void generateRandomModificationsOnVertexAndSave() throws IOException {
         long maxHeap = Runtime.getRuntime().maxMemory();
         System.out.println("Heap max en Mo: " + (maxHeap / (1024 * 1024)) + " MB");
-        double[] fractions = {0.05, 0.10, 0.20};
+        double[] fractions = {0.10, 0.20, 0.50};
         String dir = "output/vertexChangePercentageGraphs";
         FileUtils.ensureDirectoryExists(dir);
         for (double frac : fractions) {
             DirectedMultigraph<String, DefaultEdge> modif = GraphUtils.applyRandomVertexRemoval(base, frac);
+            String filename = String.format("%s/web-baidu-baike_modified_%02dpct.txt", dir, (int)(frac*100));
+            GraphUtils.saveGraph(modif, filename);
+            System.out.println("Modif " + (int)(frac*100) + "% : Sommets = " + modif.vertexSet().size() + " | Arêtes = " + modif.edgeSet().size());
+        }
+    }
+
+    @Test
+    public void generateRandomModificationsButKeepEdgeAt14MillionsOnVertexAndSave() throws IOException {
+        long maxHeap = Runtime.getRuntime().maxMemory();
+        System.out.println("Heap max en Mo: " + (maxHeap / (1024 * 1024)) + " MB");
+        double[] fractions = {0.10, 0.20, 0.50};
+        String dir = "output/vertexChangePercentageButKeepEdgeAt14MillionsMaxGraphs";
+        FileUtils.ensureDirectoryExists(dir);
+        for (double frac : fractions) {
+            DirectedMultigraph<String, DefaultEdge> modif = GraphUtils.applyRandomVertexRemovalWithEdgeCompensation(base, frac);
             String filename = String.format("%s/web-baidu-baike_modified_%02dpct.txt", dir, (int)(frac*100));
             GraphUtils.saveGraph(modif, filename);
             System.out.println("Modif " + (int)(frac*100) + "% : Sommets = " + modif.vertexSet().size() + " | Arêtes = " + modif.edgeSet().size());
@@ -86,7 +96,7 @@ public class GraphGeneration {
         String dir = "output/densityStaticGraphs";
         FileUtils.ensureDirectoryExists(dir);
         for (double dens : densities) {
-            DirectedMultigraph<String, DefaultEdge> subgraph = GraphUtils.randomSubgraph(base, size, dens);
+            DirectedMultigraph<String, DefaultEdge> subgraph = GraphUtils.subgraphWithEdgePercentage(base, dens);
             String filename = String.format("%s/web-baidu-baike_density_%d_%.3f.txt", dir, size, dens);
             GraphUtils.saveGraph(subgraph, filename);
             System.out.printf("Densité %.3f : Sommets = %d | Arêtes = %d%n", dens, subgraph.vertexSet().size(), subgraph.edgeSet().size());

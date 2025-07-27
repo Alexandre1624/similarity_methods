@@ -1,3 +1,5 @@
+package webbaiduBaike;
+
 import be.similarity.v1.SignatureSimilarity5;
 import be.similarity.v1.VertexRankingSimilarity2;
 import org.jgrapht.alg.scoring.PageRank;
@@ -27,6 +29,29 @@ public class GraphSimilarityBenchmarkSmallGraphTest {
 		try {
 			reference = parseGraph("output/small_graphs/web-baidu-baike_small_00000.txt");
 			pr1 = new PageRank<>(reference, 0.85);
+
+
+			File folder = new File("output/small_graphs");
+			File[] files = folder.listFiles();
+			int totalEdges = 0;
+			int graphCount = 0;
+
+			if (files != null) {
+				for (File file : files) {
+					if (file.isFile()) {
+						DirectedMultigraph<String, DefaultEdge> g = parseGraph(file.toString());
+						totalEdges += g.edgeSet().size();
+						graphCount++;
+					}
+				}
+			}
+
+			if (graphCount > 0) {
+				double moyenne = (double) totalEdges / graphCount;
+				System.out.println("Nombre moyen d'arêtes : " + moyenne);
+			} else {
+				System.out.println("Aucun graphe trouvé.");
+			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

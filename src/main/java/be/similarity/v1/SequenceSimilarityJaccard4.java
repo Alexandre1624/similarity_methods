@@ -95,70 +95,70 @@ public class SequenceSimilarityJaccard4 {
     }
 
      public static void main(String[] args) {
-//        DirectedMultigraph<String, DefaultEdge> graphC = new DirectedMultigraph<>(DefaultEdge.class);
-//
-//        // Ajouter les sommets
-//        String[] vertices = {"A", "B", "C", "D", "E", "F", "G", "H"};
-//        for (String v : vertices) {
-//            graphC.addVertex(v);
-//        }
-//
-//         graphC.addEdge("A", "D");
-//
-//         graphC.addEdge("B", "A");
-//         graphC.addEdge("B", "D");
-//         graphC.addEdge("B", "E");
-//
-//         graphC.addEdge("C", "F");
-//
-//         graphC.addEdge("D", "A");
-//         graphC.addEdge("D", "B");
-//         graphC.addEdge("D", "E");
-//
-//         graphC.addEdge("E", "D");
-//         graphC.addEdge("E", "F");
-//         graphC.addEdge("E", "G");
-//
-//         graphC.addEdge("F", "C");
-//         graphC.addEdge("F", "E");
-//         graphC.addEdge("F", "H");
-//
-//// n'a pas d'outlinks donc pas d'arête sortante
-//
-//         graphC.addEdge("H", "F");
-//
-//        DirectedMultigraph<String, DefaultEdge> gp = new DirectedMultigraph<>(DefaultEdge.class);
-//
-//        String[] verticesC = {"A", "B", "C", "D", "E", "F", "G", "H"};
-//        for (String v : verticesC) gp.addVertex(v);
-//
-//        gp.addEdge("A", "D");
-//        gp.addEdge("B", "A");
-//        gp.addEdge("B", "D");
-//        gp.addEdge("B", "E");
-//        gp.addEdge("C", "F");
-//        gp.addEdge("D", "A");
-//        gp.addEdge("D", "B");
-//
-//        gp.addEdge("E", "D");
-//        gp.addEdge("E", "F");
-//
-//        gp.addEdge("F", "C");
-//        gp.addEdge("F", "E");
-//        gp.addEdge("F", "H");
-//        gp.addEdge("G", "H"); // Nouvelle arête
-//        gp.addEdge("H", "F");
-//
-//        List<String> seqG = serializeGraph(graphC, null);
-//        List<String> seqGp = serializeGraph(gp, null);
-//
-//        System.out.println("Séquence G: " + seqG);
-//        System.out.println("Séquence G': " + seqGp);
-//
-//        Set<String> shinglesG = shingles(seqG, 3);
-//        Set<String> shinglesGp = shingles(seqGp, 3);
-//
-//        double similarity = jaccardSimilarity(shinglesG, shinglesGp);
-//        System.out.println("Similarité Jaccard estimée: " + similarity);
+        DirectedMultigraph<String, DefaultEdge> graphC = new DirectedMultigraph<>(DefaultEdge.class);
+
+        // Ajouter les sommets
+        String[] vertices = {"A", "B", "C", "D", "E", "F", "G", "H"};
+        for (String v : vertices) {
+            graphC.addVertex(v);
+        }
+
+         graphC.addEdge("A", "D");
+
+         graphC.addEdge("B", "A");
+         graphC.addEdge("B", "D");
+         graphC.addEdge("B", "E");
+
+         graphC.addEdge("C", "F");
+
+         graphC.addEdge("D", "A");
+         graphC.addEdge("D", "B");
+         graphC.addEdge("D", "E");
+
+         graphC.addEdge("E", "D");
+         graphC.addEdge("E", "F");
+         graphC.addEdge("E", "G");
+
+         graphC.addEdge("F", "C");
+         graphC.addEdge("F", "E");
+         graphC.addEdge("F", "H");
+
+// n'a pas d'outlinks donc pas d'arête sortante
+
+         graphC.addEdge("H", "F");
+
+        DirectedMultigraph<String, DefaultEdge> gp = new DirectedMultigraph<>(DefaultEdge.class);
+
+        String[] verticesC = {"A", "B", "C", "D", "E", "F", "G", "H"};
+        for (String v : verticesC) gp.addVertex(v);
+
+        gp.addEdge("A", "D");
+        gp.addEdge("B", "A");
+        gp.addEdge("B", "D");
+        gp.addEdge("B", "E");
+        gp.addEdge("C", "F");
+        gp.addEdge("D", "A");
+        gp.addEdge("D", "B");
+
+        gp.addEdge("E", "D");
+        gp.addEdge("E", "F");
+
+        gp.addEdge("F", "C");
+        gp.addEdge("F", "E");
+        gp.addEdge("F", "H");
+        gp.addEdge("G", "H"); // Nouvelle arête
+        gp.addEdge("H", "F");
+
+        List<String> seqG = serializeGraph(graphC, null);
+        List<String> seqGp = serializeGraph(gp, null);
+
+        System.out.println("Séquence G: " + seqG);
+        System.out.println("Séquence G': " + seqGp);
+
+        Set<String> shinglesG = shingles(seqG, 3);
+        Set<String> shinglesGp = shingles(seqGp, 3);
+
+        double similarity = jaccardSimilarity(shinglesG, shinglesGp);
+        System.out.println("Similarité Jaccard estimée: " + similarity);
     }
 }

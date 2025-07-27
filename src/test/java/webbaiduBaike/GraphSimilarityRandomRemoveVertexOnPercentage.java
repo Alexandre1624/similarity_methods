@@ -1,3 +1,5 @@
+package webbaiduBaike;
+
 import be.similarity.v1.SignatureSimilarity5;
 import be.similarity.v1.VertexRankingSimilarity2;
 import org.jgrapht.alg.scoring.PageRank;
@@ -13,15 +15,19 @@ import static be.Main.parseGraph;
 import static be.similarity.v1.SequenceSimilarityJaccard4.*;
 import static be.similarity.v1.SimilarityVEO1.veoSimilarity;
 import static be.similarity.v1.vertexEdgeVectorSimilarityVS3.vertexEdgeVectorSimilarity;
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 
-public class GraphSimilarityStaticSizeDifferentDensities {
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+public class GraphSimilarityRandomRemoveVertexOnPercentage {
     static final DirectedMultigraph<String, DefaultEdge> reference;
     static final PageRank<String, DefaultEdge> pr1;
 
     static {
         try {
             reference = parseGraph("src/main/resources/web-baidu-baike.txt");
+            System.out.printf(
+                    "graphe de taille %s et avec %s",
+                    reference.edgeSet().size(), reference.vertexSet().size()
+            );
             pr1 = new PageRank<>(reference, 0.85);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -59,45 +65,45 @@ public class GraphSimilarityStaticSizeDifferentDensities {
             Object result = func.compute(reference, g, pr2);  // <-- récupère le résultat
             double elapsed = (System.nanoTime() - start) / 1e9;
             System.out.printf(
-                    "graphe de taille %s et de densité %.2f comparés en %.2fs ; Similarité : %s%n",
-                    g.vertexSet().size(), density * 100, elapsed, result
+                    "graphe de taille %s.  avec %.2f de sommets en moins et avec %s d'arêtes comparés en %.2fs ; Similarité : %s%n",
+                    g.vertexSet().size(), density * 100, g.edgeSet().size(), elapsed, result
             );
         }
     }
 
     @Test
-    @Tag("densityStaticSize")
+    @Tag("vertexChangePercentage")
     @Order(6)
-    public void testVeoSimilarityOnDensities1() throws IOException {
-        double[] densities = {0.1, 0.2, 0.5};
-        String rootDir = "output/densityStaticGraphs";
+    public void testVeoSimilarityOnVertexChangePercentage1() throws IOException {
+        double[] densities = {0.10, 0.20, 0.50};
+        String rootDir = "output/vertexChangePercentageGraphs";
         benchmarkMethodOnDensities(rootDir, densities, (g1, g2, pr2) -> veoSimilarity(g1, g2));
     }
 
     @Test
-    @Tag("densityStaticSize")
+    @Tag("vertexChangePercentage")
     @Order(7)
-    public void testVertexRankingSimilarity2OnDensities2() throws IOException {
-        double[] densities = {0.1, 0.2, 0.5};
-        String rootDir = "output/densityStaticGraphs";
+    public void testVertexRankingSimilarityOnVertexChangePercentage2() throws IOException {
+        double[] densities = {0.10, 0.20, 0.50};
+        String rootDir = "output/vertexChangePercentageGraphs";
         benchmarkMethodOnDensities(rootDir, densities, (g1, g2, pr2) -> new VertexRankingSimilarity2<String, DefaultEdge>().vertexRankingSimilarity(g1, g2, pr1, pr2));
     }
 
     @Test
-    @Tag("densityStaticSize")
+    @Tag("vertexChangePercentage")
     @Order(8)
-    public void testVertexEdgeVectorSimilarityOnDensities3() throws IOException {
-        double[] densities = {0.1, 0.2, 0.5};
-        String rootDir = "output/densityStaticGraphs";
+    public void testVertexEdgeVectorSimilarityOnVertexChangePercentage3() throws IOException {
+        double[] densities = {0.10, 0.20, 0.50};
+        String rootDir = "output/vertexChangePercentageGraphs";
         benchmarkMethodOnDensities(rootDir, densities, (g1, g2, pr2) -> vertexEdgeVectorSimilarity(g1, g2, pr1, pr2));
     }
 
     @Test
-    @Tag("densityStaticSize")
+    @Tag("vertexChangePercentage")
     @Order(9)
-    public void testJaccardShingleSimilarityOnDensities4() throws IOException {
-        double[] densities = {0.1, 0.2, 0.5};
-        String rootDir = "output/densityStaticGraphs";
+    public void testJaccardShingleSimilarityOnVertexChangePercentage4() throws IOException {
+        double[] densities = {0.10, 0.20, 0.50};
+        String rootDir = "output/vertexChangePercentageGraphs";
         benchmarkMethodOnDensities(rootDir, densities, (g1, g2, pr2) -> {
             List<String> seqG1 = serializeGraph(g1, pr1);
             List<String> seqG2 = serializeGraph(g2, pr2);
@@ -108,11 +114,11 @@ public class GraphSimilarityStaticSizeDifferentDensities {
     }
 
     @Test
-    @Tag("densityStaticSize")
+    @Tag("vertexChangePercentage")
     @Order(10)
-    public void testSignatureSimilarityOnDensities5() throws IOException {
-        double[] densities = {0.1, 0.2, 0.5};
-        String rootDir = "output/densityStaticGraphs";
+    public void testSignatureSimilarityOnVertexChangePercentage5() throws IOException {
+        double[] densities = {0.10, 0.20, 0.50};
+        String rootDir = "output/vertexChangePercentageGraphs";
         benchmarkMethodOnDensities(rootDir, densities, (g1, g2, pr2 ) -> {
             BitSet sig1 = SignatureSimilarity5.computeSignature(g1, pr1);
             BitSet sig2 = SignatureSimilarity5.computeSignature(g2, pr2);

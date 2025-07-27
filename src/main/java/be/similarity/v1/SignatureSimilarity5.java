@@ -15,7 +15,8 @@ import static be.similarity.v1.vertexEdgeVectorSimilarityVS3.vertexEdgeVectorSim
 public class SignatureSimilarity5 {
 
     // Taille de la signature (en bits)
-    private static final int SIGNATURE_SIZE = 512;
+    private static final int SIGNATURE_SIZE = 128;
+    private static final Map<String, byte[]> hashCache = new HashMap<>(); // global ou static
 
     /**
      * Calcule la signature SimHash d'un graphe en utilisant PageRank pour les poids.
@@ -25,7 +26,7 @@ public class SignatureSimilarity5 {
     public static BitSet computeSignature(DirectedMultigraph<String, DefaultEdge> graph, PageRank<String, DefaultEdge> pageRank) {
         // Calcul des scores PageRank
 
-        if ( pageRank == null) {
+        if (pageRank == null) {
             pageRank = new PageRank<>(graph);
         }
         // Tableau pour accumuler les contributions de chaque bit
@@ -43,11 +44,11 @@ public class SignatureSimilarity5 {
             String v = graph.getEdgeTarget(e);
             double qU = pageRank.getVertexScore(u);
             int outDeg = graph.outDegreeOf(u);
-            if(outDeg > 2){
-                outDeg -=1;
+            if (outDeg > 2) {
+                outDeg -= 1;
             }
             double w = (outDeg > 0) ? qU / outDeg : qU;
-            updateBitSums(bitSums, String.valueOf(u + "->" + v), w);
+            updateBitSums(bitSums, u + "->" + v, w);
         }
 
         // Construction de la signature finale : bit = 1 si sum>=0, sinon 0
@@ -59,12 +60,15 @@ public class SignatureSimilarity5 {
         }
         return signature;
     }
+    private static byte[] getOrComputeHash(String feature) {
+        return hashCache.computeIfAbsent(feature, SignatureSimilarity5::MD5);
+    }
 
     /**
      * Met à jour le tableau bitSums avec la contribution d'une caractéristique.
      */
     private static void updateBitSums(double[] bitSums, String feature, double weight) {
-        byte[] hash = sha512(String.valueOf(feature));
+        byte[] hash = getOrComputeHash(feature);
         for (int i = 0; i < SIGNATURE_SIZE; i++) {
             int bit = ((hash[i / 8] >> (7 - (i % 8))) & 1);
             bitSums[i] += (bit == 1 ? +weight : -weight);
@@ -74,9 +78,9 @@ public class SignatureSimilarity5 {
     /**
      * Calcule le SHA-512 d'une chaîne.
      */
-    private static byte[] sha512(String data) {
+    private static byte[] MD5(String data) {
         try {
-            MessageDigest md = MessageDigest.getInstance("SHA-512");
+            MessageDigest md = MessageDigest.getInstance("MD5");
             return md.digest(data.getBytes());
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("SHA-512 non supporté", e);
