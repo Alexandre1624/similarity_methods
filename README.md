@@ -1,6 +1,6 @@
 # Graph Similarity Methods – Thesis Project
 
-This project aims to test several methods for studying graph similarity as part of my thesis.
+This project aims to webbaiduBaike.test several methods for studying graph similarity as part of my thesis.
 
 ## Prerequisites
 
@@ -23,5 +23,5 @@ mvn clean install
 ```
 
 afert all the steps, you will need to generate the graphs: 
-src/test/java/GraphGeneration
-after this you can test all the methods.
+src/webbaiduBaike.test/java/webbaiduBaike.GraphGeneration
+after this you can webbaiduBaike.test all the methods.

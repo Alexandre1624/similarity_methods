@@ -1,0 +1,4 @@
+filename,vertexes,edges,density,minHash400
+web-baidu-baike_modified_0.100.txt,1927170,14441301,10.00,123.9895
+web-baidu-baike_modified_0.200.txt,1713040,11350795,20.00,83.0287
+web-baidu-baike_modified_0.500.txt,1070650,4506736,50.00,40.7181

@@ -2,30 +2,22 @@ package be.similarity.v1;
 
 import org.jgrapht.graph.*;
 
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
-import org.jgrapht.alg.scoring.PageRank;
 import org.jgrapht.graph.DefaultEdge;
 
 public class SequenceSimilarityJaccard4 {
 
     // Sérialisation du graphe selon la qualité (ici degré du sommet)
-    public static List<String> serializeGraph(DirectedMultigraph<String, DefaultEdge> graph, PageRank<String, DefaultEdge> pageRank) {
+    public static List<String> serializeGraph(DirectedMultigraph<String, DefaultEdge> graph, Map<String, Double> pageRank) {
         List<String> sequence = new ArrayList<>();
         Set<String> visited = new HashSet<>();
 
-        // Calcul des scores PageRank si nécessaire
-        if (pageRank == null) {
-            pageRank = new PageRank<>(graph);
-        }
-        Map<String, Double> scores = pageRank.getScores();
-
         // Utilise LinkedHashSet pour garder l'ordre de tri et supprimer efficacement
         List<String> sortedVertices = new ArrayList<>(graph.vertexSet());
-        sortedVertices.sort(Comparator.comparingDouble(scores::get).reversed());
+        sortedVertices.sort(Comparator.comparingDouble(pageRank::get).reversed());
         Set<String> vertexSet = new LinkedHashSet<>(sortedVertices);
 
         String currentNode = null;
@@ -59,31 +51,36 @@ public class SequenceSimilarityJaccard4 {
             }
             // Prends le voisin avec le plus gros score
             currentNode = neighbors.stream()
-                    .max(Comparator.comparingDouble(scores::get))
+                    .max(Comparator.comparingDouble(pageRank::get))
                     .orElse(null);
         }
         return sequence;
     }
 
-    // Shingling
+    // Génère l'ensemble des shingles (k-grams) à partir d'une séquence de tokens
     public static Set<String> shingles(List<String> seq, int k) {
         Set<String> shingleSet = new HashSet<>();
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-1");
+            // On parcourt la séquence en extrayant toutes les fenêtres de taille k (k-shingles)
             for (int i = 0; i <= seq.size() - k; i++) {
                 List<String> window = seq.subList(i, i + k);
-                String shingle = String.join(" ", window).toLowerCase(); // normalisation
+                // On normalise le shingle
+                String shingle = String.join(" ", window).toLowerCase();
+                // On calcule un hash du shingle pour éviter de manipuler directement les chaînes
                 byte[] hash = md.digest(shingle.getBytes(StandardCharsets.UTF_8));
+                // On encode le hash en base64 pour le stocker sous forme de chaîne compacte
                 shingleSet.add(Base64.getEncoder().encodeToString(hash));
             }
         } catch (NoSuchAlgorithmException e) {
+            // Gestion d’erreur au cas où l’algorithme de hachage SHA-1 n’est pas disponible
             throw new RuntimeException("SHA-1 algorithm not found", e);
         }
 
         return shingleSet;
     }
 
-    // Jaccard Similarity
+    // Calcule la similarité de Jaccard entre deux ensembles
     public static double jaccardSimilarity(Set<String> s1, Set<String> s2) {
         Set<String> intersection = new HashSet<>(s1);
         intersection.retainAll(s2);

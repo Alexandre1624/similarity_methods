@@ -1,0 +1,4 @@
+filename,vertexes,edges,density,minHash400
+web-baidu-baike_density_2141300_0.500.txt,2141300,8891666,50.00,126.2264
+web-baidu-baike_density_2141300_0.100.txt,2141300,1778333,10.00,115.1394
+web-baidu-baike_density_2141300_0.200.txt,2141300,3556666,20.00,116.5816

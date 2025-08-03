@@ -106,7 +106,7 @@ public class GraphUtils {
         Collections.shuffle(allVertices);
 
         // On part d'un sommet au hasard
-        String start = allVertices.get(0);
+        String start = allVertices.getFirst();
 
         Set<String> selectedVertices = new HashSet<>();
         Queue<String> queue = new LinkedList<>();
@@ -223,8 +223,6 @@ public class GraphUtils {
         return subgraph;
     }
 
-
-
     // Charge un graphe à partir d'un fichier (format edge list, 1 arc par ligne: src dest)
     public static DirectedMultigraph<String, DefaultEdge> loadGraph(String file) {
         DirectedMultigraph<String, DefaultEdge> graph = new DirectedMultigraph<>(DefaultEdge.class);
@@ -244,37 +242,19 @@ public class GraphUtils {
         return graph;
     }
 
-    // Sauvegarde au format edge list (simple à charger par Gephi ou autre)
-    public static void saveGraph(Graph<String, DefaultEdge> graph, String filename) throws IOException {
-        try (FileWriter fw = new FileWriter(filename)) {
-            for (DefaultEdge e : graph.edgeSet()) {
-                fw.write(graph.getEdgeSource(e) + "\t" + graph.getEdgeTarget(e) + "\n");
-            }
-        }
-    }
-
-    // Récupère une composante fortement connectée (la plus grande par défaut ou de taille cible)
-    public static Set<String> getStronglyConnectedComponent(DirectedMultigraph<String, DefaultEdge> graph, int minSize) {
+    // Récupère la composante la plus fortement connectée (la plus grande par défaut ou de taille cible)
+    public static Set<String> getStronglyConnectedComponent(DirectedMultigraph<String, DefaultEdge> graph) {
         var sccs = new KosarajuStrongConnectivityInspector<>(graph).stronglyConnectedSets();
-        return sccs.stream().filter(scc -> scc.size() >= minSize).findFirst().orElseGet(() -> sccs.get(0));
+        return sccs.stream()
+                .max(Comparator.comparingInt(Set::size))
+                .orElseGet(() -> sccs.stream().max(Comparator.comparingInt(Set::size)).orElse(Set.of()));
     }
-
     // Supprime un ensemble de sommets (et toutes leurs arêtes)
     public static DirectedMultigraph<String, DefaultEdge> removeVertices(DirectedMultigraph<String, DefaultEdge> graph, Set<String> toRemove) {
-        DirectedMultigraph<String, DefaultEdge> clone = (DirectedMultigraph<String, DefaultEdge>) ((DirectedMultigraph<String, DefaultEdge>)graph).clone();
+        DirectedMultigraph<String, DefaultEdge> clone = (DirectedMultigraph<String, DefaultEdge>) graph.clone();
         for (String v : toRemove) clone.removeVertex(v);
         return clone;
     }
-
-//    // Supprime un pourcentage aléatoire de sommets
-//    public static DirectedMultigraph<String, DefaultEdge> applyRandomVertexRemoval(DirectedMultigraph<String, DefaultEdge> graph, double frac) {
-//        DirectedMultigraph<String, DefaultEdge> clone = (DirectedMultigraph<String, DefaultEdge>) graph.clone();
-//        List<String> vertices = new ArrayList<>(clone.vertexSet());
-//        Collections.shuffle(vertices);
-//        int nb = (int)(vertices.size() * frac);
-//        for (int i = 0; i < nb; i++) clone.removeVertex(vertices.get(i));
-//        return clone;
-//    }
 
     // Supprime les k nœuds de plus haut degré sortant
     public static DirectedMultigraph<String, DefaultEdge> removeTopDegreeVertices(DirectedMultigraph<String, DefaultEdge> graph, int k) {
@@ -300,7 +280,7 @@ public class GraphUtils {
     public static DirectedMultigraph<String, DefaultEdge> applyRandomEdgeAddition(DirectedMultigraph<String, DefaultEdge> graph, double frac) {
         DirectedMultigraph<String, DefaultEdge> clone = (DirectedMultigraph<String, DefaultEdge>) graph.clone();
         List<String> vertices = new ArrayList<>(clone.vertexSet());
-        int possible = vertices.size() * vertices.size();
+        long possible = (long) vertices.size() * vertices.size();
         int toAdd = (int)(clone.edgeSet().size() * frac);
         Random rnd = new Random();
         Set<String> edgesExist = clone.edgeSet().stream().map(e -> clone.getEdgeSource(e) + "|" + clone.getEdgeTarget(e)).collect(Collectors.toSet());
