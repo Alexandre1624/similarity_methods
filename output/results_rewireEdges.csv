@@ -1,0 +1,2 @@
+file,nodes,edges,veo,vertexRanking,vertexEdgeVector,shingle,minHashJaccard400,minHashJaccard500,signature128,signature512
+rewireEdges_20pct.txt,62586,147892,0.85951,0.88901,0.62013,0.02222,0.01500,0.91406,0.91992

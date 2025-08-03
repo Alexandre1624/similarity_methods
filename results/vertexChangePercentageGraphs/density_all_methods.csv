@@ -1,0 +1,4 @@
+filename,vertexes,edges,density,veo,VertexRankingSimilarity,vertexEdgeSimilarity,shingles,minHash400,signature128,signature512
+web-baidu-baike_modified_0.100.txt,1927170,14441301,10.00,14.5231,9.3471,26.1884,15.4612,54.8937,39.0904,104.6943
+web-baidu-baike_modified_0.200.txt,1713040,11350795,20.00,12.9530,8.7187,22.5006,14.5451,99.8439,33.3777,90.7096
+web-baidu-baike_modified_0.500.txt,1070650,4506736,50.00,12.8255,7.4097,19.1434,11.4055,72.6544,27.3478,70.9494
