@@ -1,4 +1,4 @@
-file,nodes,edges,veo,vertexRanking,vertexEdgeVector,shingle,minHashJaccard400,minHashJaccard500,signature128,signature512
-addRandomEdges_05pct.txt,62586,155286,0.98274,0.91617,0.84957,0.07678,0.05750,0.79688,0.87305
-addRandomEdges_10pct.txt,62586,162681,0.96606,0.88749,0.74649,0.05700,0.04250,0.85156,0.83789
-addRandomEdges_20pct.txt,62586,177470,0.93435,0.82143,0.60701,0.02354,0.01250,0.78906,0.81445
+file,nodes,edges,veo,vertexRanking,vertexEdgeVector,shingle,minHashJaccard400,signature128,signature512
+addRandomEdges_05pct.txt,62586,155286,0.98274,0.91617,0.84957,0.07678,0.08500,0.79688,0.87305
+addRandomEdges_10pct.txt,62586,162681,0.96606,0.88749,0.74649,0.05700,0.06250,0.85156,0.83789
+addRandomEdges_20pct.txt,62586,177470,0.93435,0.82143,0.60701,0.02354,0.03000,0.78906,0.81445

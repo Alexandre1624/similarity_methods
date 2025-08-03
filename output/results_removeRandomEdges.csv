@@ -1,4 +1,4 @@
-file,nodes,edges,veo,vertexRanking,vertexEdgeVector,shingle,minHashJaccard400,minHashJaccard500,signature128,signature512
-removeRandomEdges_05pct.txt,62586,140498,0.98212,0.98582,0.89334,0.10421,0.05500,0.96875,0.96680
-removeRandomEdges_15pct.txt,62586,125709,0.94437,0.95967,0.72303,0.05595,0.04750,0.92969,0.94727
-removeRandomEdges_20pct.txt,62586,118314,0.92443,0.94680,0.64843,0.04249,0.03500,0.91406,0.95898
+file,nodes,edges,veo,vertexRanking,vertexEdgeVector,shingle,minHashJaccard400,signature128,signature512
+removeRandomEdges_05pct.txt,62586,140498,0.98212,0.98582,0.89334,0.10421,0.12750,0.96875,0.96680
+removeRandomEdges_15pct.txt,62586,125709,0.94437,0.95967,0.72303,0.05595,0.05500,0.92969,0.94727
+removeRandomEdges_20pct.txt,62586,118314,0.92443,0.94680,0.64843,0.04249,0.05500,0.91406,0.95898

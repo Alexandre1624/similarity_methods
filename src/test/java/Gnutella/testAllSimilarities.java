@@ -56,7 +56,7 @@ public class testAllSimilarities {
         File[] files = getFilesToCompare(rootDir);
         String csv = String.format("output/results_%s.csv", caseName);
         try (FileWriter fw = new FileWriter(csv)) {
-            fw.write("file,nodes,edges,veo,vertexRanking,vertexEdgeVector,shingle,minHashJaccard400,minHashJaccard500,signature128,signature512\n");
+            fw.write("file,nodes,edges,veo,vertexRanking,vertexEdgeVector,shingle,minHashJaccard400,signature128,signature512\n");
             for (File f : files) {
                 DirectedMultigraph<String, DefaultEdge> g = parseGraph(f.toString());
                 PageRank<String, DefaultEdge> pr2 = new PageRank<>(g, 0.85);

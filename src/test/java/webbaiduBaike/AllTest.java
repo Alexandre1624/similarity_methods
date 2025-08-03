@@ -217,38 +217,38 @@ public class AllTest {
         }
     }
 
-//    @Test
-//    public void smallGraphAllInOneFile() throws Exception {
-//        String rootDir = "output/small_graphs";
-//        benchmarkAllMethodsExecutionCount(rootDir, METHODS);
-//
-//    }
-//
-//
-//    @Test
-//    @Tag("vertexChangeGraphs")
-//    @Order(9)
-//    public void increasingSize() throws Exception {
-//        String rootDir = "output/vertexChangeGraphs";
-//        benchmarkAllMethodsOnIncreasingSize(rootDir, METHODS);
-//
-//    }
-//
-//    @Test
-//    @Tag("vertexChangePercentage")
-//    @Order(10)
-//    public void vertexChanges() throws Exception {
-//        double[] densities = {0.1, 0.2, 0.5};
-//        benchmarkAllMethodsOnDensities(
-//                "src/main/resources/web-baidu-baike.txt",
-//                "pageRanks/pagerank_scores_web-baidu-baike.txt.csv",
-//                "output/vertexChangePercentageGraphs",
-//                "results/vertexChangePercentageGraphs/density_all_methods.csv",
-//                densities,
-//                METHODS,
-//                true
-//        );
-//    }
+    @Test
+    public void smallGraphAllInOneFile() throws Exception {
+        String rootDir = "output/small_graphs";
+        benchmarkAllMethodsExecutionCount(rootDir, METHODS);
+
+    }
+
+
+    @Test
+    @Tag("vertexChangeGraphs")
+    @Order(9)
+    public void increasingSize() throws Exception {
+        String rootDir = "output/vertexChangeGraphs";
+        benchmarkAllMethodsOnIncreasingSize(rootDir, METHODS);
+
+    }
+
+    @Test
+    @Tag("vertexChangePercentage")
+    @Order(10)
+    public void vertexChanges() throws Exception {
+        double[] densities = {0.1, 0.2, 0.5};
+        benchmarkAllMethodsOnDensities(
+                "src/main/resources/web-baidu-baike.txt",
+                "pageRanks/pagerank_scores_web-baidu-baike.txt.csv",
+                "output/vertexChangePercentageGraphs",
+                "results/vertexChangePercentageGraphs/density_all_methods.csv",
+                densities,
+                METHODS,
+                true
+        );
+    }
 
 
     @Test
