@@ -1,8 +1,3 @@
-method,count
-veo,1652236
-VertexRankingSimilarity,532170
-vertexEdgeSimilarity,620460
-shingles,357029
-minHash400,92860
-signature128,105100
-signature512,33053
+version https://git-lfs.github.com/spec/v1
+oid sha256:17e87cced79d6311ed22c96f16e78c0e19a5764a4cb16d896251b2892c199ab7
+size 164

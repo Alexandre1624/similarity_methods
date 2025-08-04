@@ -1,4 +1,3 @@
-filename,vertexes,edges,density,minHash400
-web-baidu-baike_modified_0.100.txt,1927170,14441301,10.00,123.9895
-web-baidu-baike_modified_0.200.txt,1713040,11350795,20.00,83.0287
-web-baidu-baike_modified_0.500.txt,1070650,4506736,50.00,40.7181
+version https://git-lfs.github.com/spec/v1
+oid sha256:68a2e2753007fb0f9af6c8bb1c7b73ab46bf5f12cd1ee53650fd0aade930873a
+size 245
