@@ -13,7 +13,7 @@ public class vertexEdgeVectorSimilarityVS3 {
             Map<String, Double> prG,
             Map<String, Double> prGp) {
 
-        // 1. On pré-calcule pour chaque sommet l’ensemble de ses voisins sortants dans G et dans Gp.
+        // On pré-calcule pour chaque sommet l’ensemble de ses voisins sortants dans G et dans Gp.
         Map<String, Set<String>> outNeighborsG = new HashMap<>();
         for (String u : G.vertexSet()) {
             outNeighborsG.put(u, G.outgoingEdgesOf(u).stream()
@@ -25,7 +25,7 @@ public class vertexEdgeVectorSimilarityVS3 {
                     .map(Gp::getEdgeTarget).collect(Collectors.toSet()));
         }
 
-        // 2. On construit l’union de toutes les arêtes (u,v) présentes dans G ou dans Gp.
+        //On construit l’union de toutes les arêtes (u,v) présentes dans G ou dans Gp.
         //    Cela garantit qu’on compare toutes les arêtes, même si elles n’existent que dans un seul graphe.
         Set<PairCusstom> unionEdges = new HashSet<>();
         for (DefaultEdge e : G.edgeSet()) {
@@ -37,7 +37,7 @@ public class vertexEdgeVectorSimilarityVS3 {
             unionEdges.add(new PairCusstom(u, v));
         }
 
-        // 3. On calcule, pour chaque arête de l’union, sa pondération normalisée dans G et dans Gp.
+        // On calcule, pour chaque arête de l’union, sa pondération normalisée dans G et dans Gp.
         double totalNormDiff = 0.0;
         for (PairCusstom uv : unionEdges) {
             String u = uv.u, v = uv.v;
@@ -73,9 +73,9 @@ public class vertexEdgeVectorSimilarityVS3 {
             totalNormDiff += normDiff;
         }
 
-        // 4. Moyenne des différences normalisées sur toutes les arêtes.
+        // Moyenne des différences normalisées sur toutes les arêtes.
         int m = unionEdges.size();
-        // 5. La similarité globale : 1 - (différence moyenne). Valeur entre 0 (très différent) et 1 (identique).
+        // La similarité globale : 1 - (différence moyenne). Valeur entre 0 (très différent) et 1 (identique).
         return 1.0 - (m > 0 ? (totalNormDiff / m) : 0.0);
     }
 

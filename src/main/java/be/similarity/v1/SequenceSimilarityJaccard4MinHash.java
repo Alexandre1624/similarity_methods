@@ -9,7 +9,7 @@ import java.util.*;
 public class SequenceSimilarityJaccard4MinHash {
     private static final int PRIME = 429496731;
 
-    // --- 1. Sérialisation du graphe ---
+    // Sérialisation du graphe ---
     public static List<String> serializeGraphMinHash(DirectedMultigraph<String, DefaultEdge> graph,  Map<String, Double> scores) {
         List<String> sequence = new ArrayList<>();
         Set<String> visited = new HashSet<>();
@@ -58,7 +58,7 @@ public class SequenceSimilarityJaccard4MinHash {
     public static int shingleMurmur(String shingle) {
         return Hashing.murmur3_32_fixed().hashUnencodedChars(shingle).asInt();
     }
-    // --- 2. Extraction de shingles sous forme d'IDs ---
+    // Extraction de shingles sous forme d'IDs ---
     public static Set<Integer> shingleIds(List<String> seq, int k) {
         Set<Integer> shingleSet = new HashSet<>();
         for (int i = 0; i <= seq.size() - k; i++) {
@@ -70,7 +70,7 @@ public class SequenceSimilarityJaccard4MinHash {
         return shingleSet;
     }
 
-    // --- 3. Génération des fonctions de hachage MinHash ---
+    // -Génération des fonctions de hachage MinHash ---
     // Génère m fonctions de hachage indépendantes du type h(x) = (a*x + b) % PRIME,
     // où a et b sont choisis aléatoirement.
     public static List<int[]> generateHashFunctions(int m) {
@@ -84,7 +84,7 @@ public class SequenceSimilarityJaccard4MinHash {
         return functions;
     }
 
-    // --- 4. Calcul de la signature MinHash ---
+    // Calcul de la signature MinHash ---
     // Calcule le vecteur de signature MinHash du set de shingles fourni.
     // La signature a une case par fonction de hachage (m en tout) : pour chaque fonction, on prend le plus petit hash sur tous les shingles.
     public static int[] minHashSignature(Set<Integer> shingleIds, List<int[]> hashFunctions) {
@@ -108,9 +108,7 @@ public class SequenceSimilarityJaccard4MinHash {
         return signature;
     }
 
-    // --- 5. Similarité estimée via MinHash ---
-    // Estime la similarité de Jaccard entre deux ensembles à partir de leurs signatures MinHash.
-    // On compte le nombre de positions identiques, et on le divise par la longueur de la signature.
+    // Similarité estimée MinHash
     public static double estimateMinHashSimilarity(int[] sig1, int[] sig2) {
         if (sig1.length != sig2.length) throw new IllegalArgumentException("Signatures de tailles différentes");
         int match = 0;
@@ -122,7 +120,6 @@ public class SequenceSimilarityJaccard4MinHash {
         return (double) match / sig1.length;
     }
 
-    // --- Exemple d'utilisation ---
     public static void main(String[] args) {
         // Création de deux petits graphes exemples
         DirectedMultigraph<String, DefaultEdge> graph1 = new DirectedMultigraph<>(DefaultEdge.class);
@@ -139,8 +136,8 @@ public class SequenceSimilarityJaccard4MinHash {
         graph2.addEdge("A", "B");
         graph2.addEdge("B", "D");
 
-        int k = 3; // taille des shingles
-        int m = 500; // nombre de fonctions de hachage =, plus haut plus grande precision
+        int k = 3;
+        int m = 500;
 
         List<String> seq1 = serializeGraphMinHash(graph1, null);
         List<String> seq2 = serializeGraphMinHash(graph2, null);

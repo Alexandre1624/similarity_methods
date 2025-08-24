@@ -1,5 +1,6 @@
 package be.similarity.v1;
 
+import com.google.common.hash.Hashing;
 import org.jgrapht.graph.*;
 
 import java.nio.charset.StandardCharsets;
@@ -10,7 +11,7 @@ import org.jgrapht.graph.DefaultEdge;
 
 public class SequenceSimilarityJaccard4 {
 
-    // Sérialisation du graphe selon la qualité (ici degré du sommet)
+    // Sérialisation du graphe selon la qualité (ici par pageRank)
     public static List<String> serializeGraph(DirectedMultigraph<String, DefaultEdge> graph, Map<String, Double> pageRank) {
         List<String> sequence = new ArrayList<>();
         Set<String> visited = new HashSet<>();
@@ -57,20 +58,25 @@ public class SequenceSimilarityJaccard4 {
         return sequence;
     }
 
+    public static int shingleMurmur(String shingle) {
+        return Hashing.murmur3_32_fixed().hashUnencodedChars(shingle).asInt();
+    }
+
+
+
     // Génère l'ensemble des shingles (k-grams) à partir d'une séquence de tokens
-    public static Set<String> shingles(List<String> seq, int k) {
-        Set<String> shingleSet = new HashSet<>();
+    public static Set<Integer> shingles(List<String> seq, int k) {
+        Set<Integer> shingleSet = new HashSet<>();
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-1");
             // On parcourt la séquence en extrayant toutes les fenêtres de taille k (k-shingles)
             for (int i = 0; i <= seq.size() - k; i++) {
                 List<String> window = seq.subList(i, i + k);
                 // On normalise le shingle
-                String shingle = String.join(" ", window).toLowerCase();
-                // On calcule un hash du shingle pour éviter de manipuler directement les chaînes
-                byte[] hash = md.digest(shingle.getBytes(StandardCharsets.UTF_8));
-                // On encode le hash en base64 pour le stocker sous forme de chaîne compacte
-                shingleSet.add(Base64.getEncoder().encodeToString(hash));
+                String shingle = String.join("", window).toLowerCase();
+                // On calcule un hash du shingle
+                int id = Math.abs(shingleMurmur(shingle));
+                shingleSet.add(id);
             }
         } catch (NoSuchAlgorithmException e) {
             // Gestion d’erreur au cas où l’algorithme de hachage SHA-1 n’est pas disponible
@@ -81,11 +87,11 @@ public class SequenceSimilarityJaccard4 {
     }
 
     // Calcule la similarité de Jaccard entre deux ensembles
-    public static double jaccardSimilarity(Set<String> s1, Set<String> s2) {
-        Set<String> intersection = new HashSet<>(s1);
+    public static double jaccardSimilarity(Set<Integer> s1, Set<Integer> s2) {
+        Set<Integer> intersection = new HashSet<>(s1);
         intersection.retainAll(s2);
 
-        Set<String> union = new HashSet<>(s1);
+        Set<Integer> union = new HashSet<>(s1);
         union.addAll(s2);
 
         return (double) intersection.size() / union.size();
@@ -152,8 +158,8 @@ public class SequenceSimilarityJaccard4 {
         System.out.println("Séquence G: " + seqG);
         System.out.println("Séquence G': " + seqGp);
 
-        Set<String> shinglesG = shingles(seqG, 3);
-        Set<String> shinglesGp = shingles(seqGp, 3);
+        Set<Integer> shinglesG = shingles(seqG, 3);
+        Set<Integer> shinglesGp = shingles(seqGp, 3);
 
         double similarity = jaccardSimilarity(shinglesG, shinglesGp);
         System.out.println("Similarité Jaccard estimée: " + similarity);
